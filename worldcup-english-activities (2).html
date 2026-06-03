@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup English Challenge | SQA Education</title>
+<meta name="description" content="Free soccer & World Cup 2026 English activities for every level, A1 to Conversation. By SQA Education Foundation.">
+
+<!-- ===== Social / Instagram link preview ===== -->
+<meta property="og:title" content="World Cup English Challenge ⚽">
+<meta property="og:description" content="Free soccer & World Cup 2026 English practice — every level, A1 to Conversation.">
+<meta property="og:type" content="website">
+
+<!--
+  =====================================================================
+  HOW SIGNUPS WORK  (nothing to wire up in this file)
+  ---------------------------------------------------------------------
+  Signups are captured by an embedded Jotform form, which has its own
+  CAPTCHA / spam protection. This public page NEVER touches your Klaviyo
+  account, so no API key is exposed here. That removes the form-bombing
+  attack surface entirely.
+
+  To flow leads from Jotform into Klaviyo (privately, server-to-server):
+    1. In Jotform, open this form > Settings > Integrations.
+    2. Add the Klaviyo integration (or a Webhook / Zapier) and map
+       Name, Email, Phone to your Klaviyo list. That connection lives
+       inside Jotform and is never visible on this page.
+    3. Optional: set the Klaviyo list to double opt-in for an extra
+       confirmation step before anyone becomes a subscriber.
+
+  To swap in a different Jotform form, change JOTFORM_ID in the script.
+  =====================================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,800;1,500&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --pitch-0:#04130d;
+    --pitch-1:#0a2417;
+    --pitch-2:#0f3522;
+    --line:rgba(198,255,61,.14);
+    --lime:#c6ff3d;
+    --lime-dim:#9fd62f;
+    --coral:#ff5d52;
+    --gold:#ffc83d;
+    --ink:#eafff0;
+    --ink-soft:#b9d6c5;
+    --ink-faint:#7fa691;
+    --card:rgba(255,255,255,.04);
+    --card-line:rgba(198,255,61,.18);
+    --good:#3ddc84;
+    --bad:#ff6b6b;
+    --radius:18px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Hanken Grotesk',-apple-system,sans-serif;
+    background:var(--pitch-0);
+    color:var(--ink);
+    min-height:100vh;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ---- stadium atmosphere ---- */
+  .bg{position:fixed;inset:0;z-index:-2;
+    background:
+      radial-gradient(120% 80% at 50% -10%, var(--pitch-2) 0%, var(--pitch-1) 38%, var(--pitch-0) 78%);
+  }
+  .bg::before{ /* pitch lines */
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(100% 70% at 50% 0%,#000 0%,transparent 75%);
+            mask-image:radial-gradient(100% 70% at 50% 0%,#000 0%,transparent 75%);
+    opacity:.7;
+  }
+  .glow{position:fixed;z-index:-1;border-radius:50%;filter:blur(80px);opacity:.5;pointer-events:none}
+  .glow.a{width:380px;height:380px;background:var(--lime);top:-120px;left:-100px;opacity:.18}
+  .glow.b{width:320px;height:320px;background:var(--coral);bottom:-120px;right:-90px;opacity:.16}
+  /* grain */
+  body::after{content:"";position:fixed;inset:0;z-index:50;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  .wrap{max-width:680px;margin:0 auto;padding:26px 20px 80px}
+
+  /* ---- brand bar ---- */
+  .brand{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:34px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(140deg,var(--lime),var(--lime-dim));font-size:18px}
+  .brand b{font-family:'Anton';letter-spacing:.04em;font-size:1.05rem;text-transform:uppercase}
+  .brand span{color:var(--ink-faint);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase}
+
+  /* ---- entrance anim ---- */
+  .rise{opacity:0;transform:translateY(18px);animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  /* ===== GATE ===== */
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:.7rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--lime);border:1px solid var(--card-line);
+    padding:7px 14px;border-radius:999px;background:rgba(198,255,61,.05)}
+  .hero h1{font-family:'Anton';font-weight:400;line-height:.92;letter-spacing:.01em;
+    font-size:clamp(2.8rem,12vw,4.4rem);text-transform:uppercase;margin:18px 0 0}
+  .hero h1 em{font-style:normal;color:var(--lime);display:block}
+  .hero h1 .alt{color:var(--coral)}
+  .hero p.lede{color:var(--ink-soft);font-size:1.05rem;margin-top:16px;max-width:42ch}
+
+  .scoreline{font-family:'Space Mono';font-size:.78rem;color:var(--ink-faint);letter-spacing:.05em;
+    margin-top:20px;display:flex;gap:14px;flex-wrap:wrap}
+  .scoreline b{color:var(--gold)}
+
+  .card{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);
+    backdrop-filter:blur(6px)}
+  .gate-card{margin-top:24px;padding:18px 16px}
+  .gate-card h2{font-family:'Anton';font-weight:400;text-transform:uppercase;letter-spacing:.02em;
+    font-size:1.35rem;display:flex;align-items:center;gap:10px}
+  .gate-card .sub{color:var(--ink-faint);font-size:.9rem;margin:6px 0 22px}
+
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:7px}
+  .field input{width:100%;padding:14px 16px;border-radius:13px;border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.25);color:var(--ink);font-size:1rem;font-family:inherit;transition:.18s}
+  .field input::placeholder{color:#5d7d6c}
+  .field input:focus{outline:none;border-color:var(--lime);background:rgba(198,255,61,.04);
+    box-shadow:0 0 0 3px rgba(198,255,61,.12)}
+  .field.err input{border-color:var(--bad)}
+  .field .msg{color:var(--bad);font-size:.78rem;margin-top:6px;display:none}
+  .field.err .msg{display:block}
+
+  .btn{width:100%;border:none;cursor:pointer;font-family:'Anton';letter-spacing:.05em;
+    text-transform:uppercase;font-size:1.1rem;padding:16px;border-radius:14px;color:#06210f;
+    background:linear-gradient(135deg,var(--lime),var(--gold));transition:.18s;
+    box-shadow:0 10px 30px -10px rgba(198,255,61,.55)}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 36px -10px rgba(198,255,61,.7)}
+  .btn:active{transform:translateY(0)}
+  .fineprint{font-size:.72rem;color:var(--ink-faint);text-align:center;margin-top:14px;line-height:1.5}
+
+  .jf-embed{width:100%;border:none;min-height:320px;border-radius:12px;background:transparent;
+    display:block;color-scheme:light dark}
+  .continue{display:block;width:100%;margin-top:14px;background:none;border:1px solid var(--card-line);
+    color:var(--ink-faint);padding:12px;border-radius:12px;cursor:pointer;font-family:inherit;
+    font-size:.88rem;transition:.18s}
+  .continue:hover{border-color:var(--lime);color:var(--lime)}
+
+  /* ===== LEVEL PICKER ===== */
+  .section-head{margin:6px 0 22px}
+  .section-head .kicker{margin-bottom:14px}
+  .section-head h2{font-family:'Anton';font-weight:400;text-transform:uppercase;
+    font-size:clamp(2rem,8vw,2.8rem);line-height:.95}
+  .section-head p{color:var(--ink-soft);margin-top:10px}
+
+  .levels{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .lvl{position:relative;text-align:left;cursor:pointer;padding:20px 18px;overflow:hidden;
+    border-radius:var(--radius);background:var(--card);border:1px solid rgba(255,255,255,.08);
+    transition:.2s;color:inherit}
+  .lvl:hover{transform:translateY(-3px);border-color:var(--lc);box-shadow:0 14px 30px -16px var(--lc)}
+  .lvl .tag{font-family:'Anton';font-size:1.7rem;color:var(--lc);letter-spacing:.02em}
+  .lvl .nm{font-weight:800;margin-top:2px;font-size:1.02rem}
+  .lvl .bl{color:var(--ink-faint);font-size:.82rem;margin-top:6px}
+  .lvl .arrow{position:absolute;right:16px;top:18px;color:var(--lc);opacity:.5;font-size:1.1rem;transition:.2s}
+  .lvl:hover .arrow{opacity:1;transform:translateX(3px)}
+  .lvl.full{grid-column:1 / -1}
+
+  /* ===== ACTIVITY VIEW ===== */
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .back{background:none;border:1px solid var(--card-line);color:var(--ink-soft);cursor:pointer;
+    padding:9px 14px;border-radius:11px;font-family:inherit;font-size:.85rem;transition:.18s}
+  .back:hover{border-color:var(--lime);color:var(--lime)}
+  .lvl-badge{font-family:'Anton';font-size:1.5rem;color:var(--lc)}
+  .lvl-badge small{font-family:'Hanken Grotesk';font-weight:600;color:var(--ink-soft);
+    font-size:.85rem;display:block;letter-spacing:0;text-transform:none}
+
+  .act{padding:22px 20px;margin-bottom:18px}
+  .act .num{font-family:'Space Mono';color:var(--lc);font-size:.78rem;letter-spacing:.1em}
+  .act h3{font-family:'Anton';font-weight:400;text-transform:uppercase;letter-spacing:.02em;
+    font-size:1.3rem;margin:4px 0 4px}
+  .act .inst{color:var(--ink-soft);font-size:.92rem;margin-bottom:16px}
+  .reading-text{background:rgba(0,0,0,.22);border-left:3px solid var(--lc);padding:14px 16px;
+    border-radius:0 12px 12px 0;color:var(--ink);font-size:.96rem;margin-bottom:18px;line-height:1.65}
+
+  .q{margin-bottom:18px}
+  .q .qt{font-weight:600;margin-bottom:10px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
+    padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);
+    background:rgba(0,0,0,.18);color:var(--ink);font-family:inherit;font-size:.95rem;transition:.15s}
+  .opt:hover{border-color:var(--lc)}
+  .opt .mk{width:22px;height:22px;flex:none;border-radius:50%;border:1.5px solid var(--ink-faint);
+    display:grid;place-items:center;font-size:.8rem;font-weight:700}
+  .opt.correct{border-color:var(--good);background:rgba(61,220,132,.12)}
+  .opt.correct .mk{border-color:var(--good);background:var(--good);color:#04130d}
+  .opt.wrong{border-color:var(--bad);background:rgba(255,107,107,.1)}
+  .opt.wrong .mk{border-color:var(--bad);background:var(--bad);color:#fff}
+  .opt.locked{cursor:default;opacity:.85}
+  .explain{font-size:.85rem;color:var(--lime-dim);margin-top:9px;padding-left:2px;display:none}
+  .explain.show{display:block}
+
+  textarea{width:100%;min-height:110px;padding:14px 16px;border-radius:13px;resize:vertical;
+    border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);color:var(--ink);
+    font-family:inherit;font-size:1rem;line-height:1.55}
+  textarea:focus{outline:none;border-color:var(--lc);box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+  .tip{margin-top:12px;font-size:.85rem;color:var(--gold);display:flex;gap:8px;align-items:flex-start}
+  .prompt-list{list-style:none;display:grid;gap:10px;margin-bottom:6px}
+  .prompt-list li{padding:12px 14px;border-radius:12px;background:rgba(0,0,0,.18);
+    border:1px solid rgba(255,255,255,.08);font-size:.95rem}
+  .prompt-list li::before{content:"⚽ ";}
+
+  .scorebar{position:sticky;bottom:14px;margin-top:8px;padding:14px 18px;border-radius:14px;
+    background:rgba(6,33,15,.85);border:1px solid var(--card-line);backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .scorebar .s{font-family:'Space Mono';font-size:1.05rem;color:var(--lime)}
+  .scorebar .lbl{font-size:.78rem;color:var(--ink-faint)}
+  .mini{padding:9px 16px;border-radius:11px;border:none;cursor:pointer;font-family:inherit;
+    font-weight:700;font-size:.85rem;background:var(--card-line);color:var(--ink)}
+  .mini:hover{background:var(--lime);color:#06210f}
+
+  .submit-panel{text-align:center}
+  .score-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px}
+  .score-row .s{font-family:'Space Mono';font-size:1.15rem;color:var(--lc,var(--lime))}
+  .score-row .lbl{font-size:.78rem;color:var(--ink-faint)}
+  .submit-hint{color:var(--gold);font-size:.85rem;min-height:1.1em;margin-bottom:12px;display:none}
+  .submit-hint.show{display:block}
+  textarea.needs-fill{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,200,61,.15)}
+  .done{text-align:center;padding:6px 4px}
+  .done-emoji{font-size:2.4rem;line-height:1}
+  .done h3{font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:1.5rem;margin:8px 0 6px}
+  .done-score{font-size:1rem;color:var(--ink)}
+  .done-score b{color:var(--lc,var(--lime))}
+  .done-msg{color:var(--ink-soft);font-size:.92rem;margin:8px auto 18px;max-width:40ch}
+  .done .continue{margin-top:0}
+  .done .apply-cta{text-decoration:none;display:block;margin-top:12px}
+
+  footer{text-align:center;color:var(--ink-faint);font-size:.78rem;margin-top:40px;line-height:1.7}
+  footer a{color:var(--lime-dim);text-decoration:none}
+
+  .hidden{display:none!important}
+  @media(max-width:420px){ .levels{grid-template-columns:1fr} .lvl.full{grid-column:auto} }
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="glow a"></div><div class="glow b"></div>
+
+<div class="wrap">
+
+  <div class="brand rise">
+    <div class="dot">⚽</div>
+    <div>
+      <b>SQA Education</b><br>
+      <span>English Foundation</span>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 1: GATE ============ -->
+  <section id="gate">
+    <div class="hero">
+      <span class="kicker rise" style="animation-delay:.05s">⚽ World Cup 2026 · Special Edition</span>
+      <h1 class="rise" style="animation-delay:.12s">The World Cup<em>English</em><span class="alt">Challenge</span></h1>
+      <p class="lede rise" style="animation-delay:.2s">Practice English with soccer! Fun activities for every level — from your first words to free conversation. Pick your level and play.</p>
+      <div class="scoreline rise" style="animation-delay:.26s">
+        <span>🌎 <b>3</b> host countries</span>
+        <span>👕 <b>48</b> teams</span>
+        <span>📅 Jun 11 – Jul 19</span>
+      </div>
+    </div>
+
+    <div class="card gate-card rise" style="animation-delay:.32s">
+      <h2>🎟️ Get your free pass</h2>
+      <p class="sub">Enter your details below — your activities unlock right after.</p>
+
+      <iframe id="jotform" class="jf-embed" title="World Cup English Challenge signup"
+        allow="geolocation; microphone; camera; fullscreen" scrolling="no"></iframe>
+
+      <button class="btn" id="continueBtn" style="margin-top:14px">Submitted? Start the activities →</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2: LEVELS ============ -->
+  <section id="levels" class="hidden">
+    <div class="section-head">
+      <span class="kicker">✅ You're in — let's play</span>
+      <h2 id="hello">Choose your level</h2>
+      <p>Not sure? Start one level lower and move up. Every activity has instant answers and tips.</p>
+    </div>
+    <div class="levels" id="levelGrid"></div>
+  </section>
+
+  <!-- ============ SCREEN 3: ACTIVITY ============ -->
+  <section id="activity" class="hidden"></section>
+
+  <footer>
+    Made with ⚽ by <strong>SQA Education Foundation</strong> · Live teacher-led English for the world<br>
+    <a href="https://www.sqaeducation.org" target="_blank" rel="noopener" id="footLink">Apply to our classes →</a>
+  </footer>
+</div>
+
+<script>
+/* ===================================================================
+   1) JOTFORM CONFIG
+   =================================================================== */
+const JOTFORM_ID = "261535430107044";   // change to swap in a different Jotform form
+/* =================================================================== */
+
+const CONTENT = {
+  A1: { name:"Beginner", color:"#c6ff3d", blurb:"Your first soccer words.",
+    activities:[
+      { type:"quiz", title:"Soccer Words", inst:"Choose the correct word.",
+        questions:[
+          { q:"You kick the ___ with your foot.", options:["ball","book","car","hat"], answer:0, explain:"You kick the ball!" },
+          { q:"When the ball goes in the net, you score a ___.", options:["goal","page","road","plate"], answer:0, explain:"Goooal! ⚽" },
+          { q:"Eleven players make one ___.", options:["team","fruit","song","city"], answer:0, explain:"A team has 11 players on the field." },
+          { q:"A person who plays soccer is a ___.", options:["player","painter","pilot","singer"], answer:0, explain:"player = a person who plays." }
+        ]},
+      { type:"quiz", title:"Numbers & Countries", inst:"Read and choose.",
+        questions:[
+          { q:"The 2026 World Cup is in the USA, Canada and ___.", options:["Mexico","Spain","Japan","Egypt"], answer:0, explain:"Three host countries: USA, Canada, Mexico." },
+          { q:"How many players are on the field for one team?", options:["11","5","20","2"], answer:0, explain:"Eleven (11) players per team." },
+          { q:"Brazil has won the World Cup five times. Five = ___", options:["5","15","50","1"], answer:0, explain:"five = 5." }
+        ]},
+      { type:"open", title:"Say it!", inst:"Speak out loud — practice makes perfect.",
+        prompt:"Tell us your favorite team color. Say: \"My favorite team color is ___.\"",
+        tip:"Try full sentences: \"My favorite team color is green. I like green.\"" }
+    ]},
+
+  A2: { name:"Elementary", color:"#7ee0ff", blurb:"Talk about the game now.",
+    activities:[
+      { type:"quiz", title:"Present Simple", inst:"Choose the correct verb form.",
+        questions:[
+          { q:"The goalkeeper ___ the ball with his hands.", options:["catches","catch","catching","catched"], answer:0, explain:"he/she/it → catches (add -es)." },
+          { q:"My friends ___ soccer every weekend.", options:["play","plays","played","playing"], answer:0, explain:"they → play (no -s)." },
+          { q:"She ___ a great player.", options:["is","are","am","be"], answer:0, explain:"she → is." }
+        ]},
+      { type:"reading", title:"World Cup 2026 Facts", inst:"Read, then answer.",
+        text:"The 2026 World Cup is special. For the first time, three countries host it together: the United States, Canada, and Mexico. It runs from June 11 to July 19, 2026. There are 48 teams — more than ever before. The teams play in 16 cities.",
+        questions:[
+          { q:"How many countries host the 2026 World Cup?", options:["Three","One","Five","Ten"], answer:0, explain:"USA, Canada, Mexico — three countries." },
+          { q:"How many teams play?", options:["48","16","11","100"], answer:0, explain:"48 teams — a new record." },
+          { q:"When does it start?", options:["June 11, 2026","July 19, 2026","March 2026","December 2026"], answer:0, explain:"It starts June 11 and ends July 19." }
+        ]},
+      { type:"open", title:"Your turn", inst:"Write two sentences.",
+        prompt:"Write 2 sentences about a sport you like. Example: \"I like soccer. I play on Saturdays.\"",
+        tip:"Use the present simple: I like… / I play… / I watch…" }
+    ]},
+
+  B1: { name:"Intermediate", color:"#ffc83d", blurb:"Past events & opinions.",
+    activities:[
+      { type:"quiz", title:"Past Simple", inst:"Choose the correct past form.",
+        questions:[
+          { q:"Argentina ___ the 2022 World Cup.", options:["won","win","wins","winned"], answer:0, explain:"win → won (irregular)." },
+          { q:"Messi ___ in the final and became a champion.", options:["played","play","plays","has play"], answer:0, explain:"Regular verb: play → played." },
+          { q:"The fans ___ very happy when their team scored.", options:["were","was","are","is"], answer:0, explain:"the fans (plural) → were." }
+        ]},
+      { type:"reading", title:"A Tournament Like No Other", inst:"Read for the main idea.",
+        text:"The 2026 World Cup will look different. Instead of 32 teams, 48 will take part. Supporters say this gives smaller nations — countries that rarely qualify — a real chance to shine on the world stage. Critics, however, worry that more teams means more matches, a longer tournament, and tired players. Either way, fans from every continent will be watching.",
+        questions:[
+          { q:"What is the main change in 2026?", options:["More teams take part (48 instead of 32)","The final moves to Europe","Fewer cities host games","Matches get shorter"], answer:0, explain:"The key change is the jump from 32 to 48 teams." },
+          { q:"Why do critics worry?", options:["More matches may tire the players","Smaller nations will lose","Tickets cost less","There are no fans"], answer:0, explain:"They worry about a longer tournament and tired players." },
+          { q:"How do supporters feel about smaller nations?", options:["They get a real chance to shine","They should not play","They always win","They are boring"], answer:0, explain:"Supporters like that smaller nations get a chance." }
+        ]},
+      { type:"open", title:"Your opinion", inst:"Write 3–4 sentences.",
+        prompt:"Which team do you want to win the 2026 World Cup, and why?",
+        tip:"Give reasons with \"because\": \"I want Brazil to win because…\"" }
+    ]},
+
+  B2: { name:"Upper-Inter.", color:"#ff8a5d", blurb:"Conditionals & nuance.",
+    activities:[
+      { type:"quiz", title:"Conditionals & Collocations", inst:"Choose the best option.",
+        questions:[
+          { q:"If my team ___ the group stage, they will play in the next round.", options:["qualifies for","qualify","will qualify","qualified"], answer:0, explain:"First conditional: if + present simple. Collocation: qualify FOR." },
+          { q:"Three nations will ___ the 2026 tournament.", options:["host","make","do","put"], answer:0, explain:"We host an event — a fixed collocation." },
+          { q:"If you ___ harder, you would speak more confidently.", options:["practised","practise","will practise","had practise"], answer:0, explain:"Second conditional: if + past simple, would + base verb." }
+        ]},
+      { type:"reading", title:"More Than a Game", inst:"Read, then infer.",
+        text:"Hosting a World Cup is a double-edged sword. Cities pour money into stadiums, transport and security, hoping that visitors and global attention will pay it all back. Sometimes it works: tourism rises and the city gains a brighter image abroad. Other times, the shiny new stadiums sit half-empty once the final whistle blows, and taxpayers are left with the bill. The truth usually depends on careful planning long before kick-off.",
+        questions:[
+          { q:"What does \"a double-edged sword\" suggest about hosting?", options:["It has both benefits and risks","It is always profitable","It is purely about sport","It is illegal"], answer:0, explain:"A double-edged sword = something with good and bad sides." },
+          { q:"What can happen to stadiums after the tournament?", options:["They may sit half-empty","They are sold abroad","They become schools","They disappear"], answer:0, explain:"The text warns stadiums can end up half-empty." },
+          { q:"According to the text, success mostly depends on what?", options:["Careful planning beforehand","The weather","The number of goals","Ticket colour"], answer:0, explain:"\"…depends on careful planning long before kick-off.\"" }
+        ]},
+      { type:"open", title:"Make your case", inst:"Write a short paragraph.",
+        prompt:"Some say hosting the World Cup helps a country; others disagree. What do you think? Give at least two reasons.",
+        tip:"Signpost your ideas: \"On the one hand… On the other hand… Overall, I believe…\"" }
+    ]},
+
+  C1: { name:"Advanced", color:"#ff5d52", blurb:"Idioms, analysis, debate.",
+    activities:[
+      { type:"quiz", title:"Soccer Idioms in Real Life", inst:"These idioms are used far beyond the pitch — choose the meaning.",
+        questions:[
+          { q:"\"To move the goalposts\" means to…", options:["unfairly change the rules or targets","score a goal","defend well","start the match"], answer:0, explain:"Used at work/life when someone changes expectations unfairly." },
+          { q:"\"A level playing field\" describes…", options:["a fair situation for everyone","a flat stadium","a draw","a green pitch"], answer:0, explain:"It means equal, fair conditions for all." },
+          { q:"\"To score an own goal\" means to…", options:["accidentally harm your own cause","win easily","help a teammate","celebrate loudly"], answer:0, explain:"You damage your own side by mistake." },
+          { q:"\"The ball is in your court\" means…", options:["it's your turn to act or decide","the game is over","you lost the ball","you must run"], answer:0, explain:"The decision/responsibility now rests with you." }
+        ]},
+      { type:"reading", title:"Reading the Subtext", inst:"Read for tone and stance.",
+        text:"Every four years, the same chorus returns: the World Cup, we are told, unites a fractured planet for a single, glorious month. It is a seductive idea — and not entirely false. Yet one might gently ask whether shared euphoria over ninety minutes truly mends the deeper fault lines it so briefly papers over. Perhaps the tournament's real gift is humbler: not unity, but a rare, temporary permission to hope together.",
+        questions:[
+          { q:"What is the author's attitude toward the \"unites the planet\" idea?", options:["Sympathetic but sceptical","Completely convinced","Openly hostile","Indifferent"], answer:0, explain:"\"…not entirely false\" + \"one might gently ask\" signals gentle scepticism." },
+          { q:"\"Papers over\" most nearly means…", options:["temporarily hides","strengthens","destroys","prints"], answer:0, explain:"To paper over = to cover up a problem without solving it." },
+          { q:"What does the author finally suggest the real value is?", options:["A shared, temporary hope","Permanent world peace","Higher profits","Better players"], answer:0, explain:"The closing line reframes the gift as hope, not unity." }
+        ]},
+      { type:"open", title:"Take a stance", inst:"Write a persuasive paragraph.",
+        prompt:"Debate: \"Mega-events like the World Cup are worth the cost for host cities.\" Argue for OR against, and use at least one idiom from this lesson.",
+        tip:"Strong essays concede the other side first: \"Admittedly… Nevertheless…\"" }
+    ]},
+
+  Conversation: { name:"Conversation", color:"#a78bfa", blurb:"Speak freely.", full:true,
+    activities:[
+      { type:"quiz", title:"Fan Phrases", inst:"Match the natural expression to its meaning.",
+        questions:[
+          { q:"\"What's the score?\" is used to ask about…", options:["the current result","the time","the weather","the price"], answer:0, explain:"You ask the score to learn who is winning." },
+          { q:"\"It's a draw.\" means…", options:["the teams are tied","one team won","the game is cancelled","it's raining"], answer:0, explain:"A draw = equal score, no winner." },
+          { q:"\"What a goal!\" expresses…", options:["excitement and admiration","boredom","anger","a question"], answer:0, explain:"It's an exclamation of delight." }
+        ]},
+      { type:"open", title:"Warm-up", inst:"Talk through these out loud, or jot quick notes.",
+        promptList:[
+          "Do you follow soccer? Why or why not?",
+          "What is the most exciting sports moment you have ever seen?",
+          "If you could attend one 2026 match, which city would you choose and why?"
+        ],
+        tip:"Aim for 2–3 full sentences per question. Don't worry about mistakes — fluency first!" },
+      { type:"open", title:"Role-play", inst:"Imagine the scene and speak your part.",
+        prompt:"You meet a fan from another country at a 2026 match. Introduce yourself, ask which team they support, and invite them to watch the next game together.",
+        tip:"Useful openers: \"Hi, I'm… Who are you cheering for? Do you want to…?\"" },
+      { type:"open", title:"Big question", inst:"Share and defend your view.",
+        prompt:"The World Cup brings 48 nations together. Does sport unite people or divide them? Give your view with one real example.",
+        tip:"Structure it: claim → reason → example → restate." }
+    ]}
+};
+
+/* ---------- state & elements ---------- */
+const $ = s => document.querySelector(s);
+const screens = { gate:$('#gate'), levels:$('#levels'), activity:$('#activity') };
+let user = null;
+
+function show(name){
+  Object.values(screens).forEach(s=>s.classList.add('hidden'));
+  screens[name].classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- Jotform embed: load, auto-resize, advance on submit ---------- */
+const jframe = document.getElementById('jotform');
+jframe.src = "https://form.jotform.com/" + JOTFORM_ID;
+
+let advanced = false;
+function goToLevels(){ if(advanced) return; advanced = true; show('levels'); }
+
+window.addEventListener('message', function(e){
+  if(typeof e.data !== 'string') return;
+  // Jotform auto-resize:  "setHeight:<px>:<formid>"
+  if(e.data.lastIndexOf('setHeight', 0) === 0){
+    const h = parseInt(e.data.split(':')[1], 10);
+    if(h) jframe.style.height = h + 'px';
+    return;
+  }
+  // Advance to the activities once the form has been submitted
+  if(e.data.indexOf('submission-completed') > -1 ||
+     e.data.indexOf('formSubmitted')       > -1 ||
+     e.data.indexOf('thank')               > -1){
+    setTimeout(goToLevels, 700);
+  }
+});
+
+// Fallback so a student is never stuck behind the form
+document.getElementById('continueBtn').addEventListener('click', goToLevels);
+
+/* ---------- level grid ---------- */
+const grid=$('#levelGrid');
+Object.entries(CONTENT).forEach(([code,lv])=>{
+  const b=document.createElement('button');
+  b.className='lvl'+(lv.full?' full':'');
+  b.style.setProperty('--lc',lv.color);
+  b.innerHTML=`<span class="arrow">→</span><div class="tag">${code}</div>
+    <div class="nm">${lv.name}</div><div class="bl">${lv.blurb}</div>`;
+  b.addEventListener('click',()=>renderActivity(code));
+  grid.appendChild(b);
+});
+
+/* ---------- activity rendering ---------- */
+function renderActivity(code){
+  const lv=CONTENT[code];
+  const c=lv.color;
+  const root=screens.activity;
+  root.style.setProperty('--lc',c);
+  let total=0;
+  lv.activities.forEach(a=>{ if(a.questions) total+=a.questions.length; });
+
+  let html=`<div class="topbar">
+      <button class="back" id="backBtn">← Levels</button>
+      <div class="lvl-badge">${code}<small>${lv.name}</small></div>
+    </div>`;
+
+  lv.activities.forEach((a,ai)=>{
+    html+=`<div class="card act">
+      <div class="num">Activity ${ai+1} / ${lv.activities.length}</div>
+      <h3>${a.title}</h3>
+      <div class="inst">${a.inst}</div>`;
+    if(a.type==='reading') html+=`<div class="reading-text">${a.text}</div>`;
+
+    if(a.questions){
+      a.questions.forEach((q,qi)=>{
+        html+=`<div class="q" data-ai="${ai}" data-qi="${qi}" data-ans="${q.answer}">
+          <div class="qt">${qi+1}. ${q.q}</div><div class="opts">`;
+        q.options.forEach((opt,oi)=>{
+          html+=`<button class="opt" data-oi="${oi}">
+            <span class="mk">${String.fromCharCode(65+oi)}</span><span>${opt}</span></button>`;
+        });
+        html+=`</div><div class="explain">💡 ${q.explain}</div></div>`;
+      });
+    }
+    if(a.type==='open'){
+      if(a.promptList){
+        html+=`<ul class="prompt-list">${a.promptList.map(p=>`<li>${p}</li>`).join('')}</ul>`;
+      } else {
+        html+=`<div class="qt" style="margin-bottom:12px">${a.prompt}</div>`;
+      }
+      html+=`<textarea placeholder="Type or plan your answer here…"></textarea>`;
+      if(a.tip) html+=`<div class="tip">💡 <span>${a.tip}</span></div>`;
+    }
+    html+=`</div>`;
+  });
+
+  html+=`<div class="card act submit-panel" id="submitPanel">
+    ${total>0 ? `<div class="score-row"><span class="s" id="scoreText">0 / ${total}</span><span class="lbl">quiz answers correct</span></div>` : ``}
+    <div class="submit-hint" id="submitHint">Please write your answer in each box before submitting.</div>
+    <button class="btn" id="submitBtn">Submit my answers ⚽</button>
+  </div>`;
+  root.innerHTML=html;
+
+  $('#backBtn').addEventListener('click',()=>show('levels'));
+
+  // quiz interactions
+  let score=0;
+  root.querySelectorAll('.q').forEach(qEl=>{
+    const ans=+qEl.dataset.ans;
+    const opts=qEl.querySelectorAll('.opt');
+    let done=false;
+    opts.forEach(opt=>{
+      opt.addEventListener('click',()=>{
+        if(done) return; done=true;
+        const chosen=+opt.dataset.oi;
+        opts.forEach(o=>o.classList.add('locked'));
+        opts[ans].classList.add('correct');
+        if(chosen!==ans) opt.classList.add('wrong');
+        else { opt.querySelector('.mk').textContent='✓'; }
+        qEl.querySelector('.explain').classList.add('show');
+        if(chosen===ans){ score++; const st=$('#scoreText'); if(st) st.textContent=`${score} / ${total}`; }
+      });
+    });
+  });
+
+  // submit answers
+  const submitBtn=document.getElementById('submitBtn');
+  submitBtn.addEventListener('click',()=>{
+    const areas=[...root.querySelectorAll('textarea')];
+    const empty=areas.filter(t=>!t.value.trim());
+    if(empty.length){
+      areas.forEach(t=>t.classList.toggle('needs-fill',!t.value.trim()));
+      const hint=document.getElementById('submitHint'); if(hint) hint.classList.add('show');
+      empty[0].scrollIntoView({behavior:'smooth',block:'center'}); empty[0].focus();
+      return;
+    }
+    const panel=document.getElementById('submitPanel');
+    panel.innerHTML=`<div class="done">
+      <div class="done-emoji">🎉</div>
+      <h3>${lv.name} complete!</h3>
+      ${total>0 ? `<p class="done-score">You got <b>${score} / ${total}</b> on the quiz questions.</p>` : ``}
+      <p class="done-msg">Great practice! Keep your streak going, or take the next step toward live, teacher-led classes.</p>
+      <button class="continue" id="anotherLvl">Try another level →</button>
+      <a class="btn apply-cta" href="https://www.sqaeducation.org" target="_blank" rel="noopener">Not a Student Yet? Apply to our classes →</a>
+    </div>`;
+    document.getElementById('anotherLvl').addEventListener('click',()=>show('levels'));
+    panel.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  show('activity');
+}
+</script>
+</body>
+</html>
